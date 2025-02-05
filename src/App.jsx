@@ -6,10 +6,24 @@ import Home from './components/Home'
 import About from './components/About'
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import AddBlog from './components/AddBlog'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import BlogDetails from './components/BlogDetails'
 
 function App() {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState(() => {
+    const savedBlogs = localStorage.getItem("blogs");
+    return savedBlogs ? JSON.parse(savedBlogs) : []; 
+  });
+
+  // useEffect(() => {
+  //   const savedBlogs = JSON.parse(localStorage.getItem("blogs")) || [];
+  //   setBlogs(savedBlogs);
+  // },[]);
+
+  // Save blogs to localStorage whenever "blo" changes
+  useEffect(() => {
+    localStorage.setItem("blogs", JSON.stringify(blogs));
+  }, [blogs]);
   
   const addBlog = (title, content, imageUrl) => {
     console.log(imageUrl,"App");
@@ -33,6 +47,7 @@ function App() {
           <Route path='/about' element={<About/>}/>
           <Route path='/blogs' element={<BlogsList blogs={blogs} setBlogs={setBlogs}/>}/>
           <Route path='/addblog' element={<AddBlog addBlog={addBlog}/>}/>
+          <Route path="/blog/:id" element={<BlogDetails />} />
         </Routes>
         <Footer/>
       </BrowserRouter>
